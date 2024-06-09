@@ -85,10 +85,10 @@
       "group": "Credentials",
       "pages": [
         "ronika/credentials/share-credentials",
-        "ronika/credentials/delete-credentials",
+        "ronika/credentials/fetch-credentials",
         "ronika/credentials/retrieve-credentials",
         "ronika/credentials/update-credentials",
-        "ronika/credentials/fetch-credentials"
+        "ronika/credentials/delete-credentials"
       ]
     },
     {
