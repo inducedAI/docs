@@ -36,6 +36,10 @@
     {
       "name": "Knowledge Base",
       "url": "knowledge"
+    },
+    {
+      "name": "Ronika API",
+      "url": "ronika"
     }
   ],
   "primaryTab": {
@@ -44,9 +48,7 @@
   "navigation": [
     {
       "group": "Getting Started",
-      "pages": [
-        "introduction"
-      ]
+      "pages": ["introduction"]
     },
     {
       "group": "Autonomous Browsing API",
@@ -59,18 +61,42 @@
     },
     {
       "group": "Extract API",
-      "pages": [
-        "extract/quickstart",
-        "extract/task",
-        "extract/status"
-      ]
+      "pages": ["extract/quickstart", "extract/task", "extract/status"]
     },
     {
-      "group" : "Workspace Email IDs",
+      "group": "Workspace Email IDs",
       "pages": [
         "knowledge/email/introduction",
         "knowledge/email/forwarding-gmail",
         "knowledge/email/forwarding-outlook"
+      ]
+    },
+    {
+      "group": "Files",
+      "pages": [
+        "ronika/files/upload-files",
+        "ronika/files/fetch-files",
+        "ronika/files/retrieve-file",
+        "ronika/files/rename-file",
+        "ronika/files/delete-file"
+      ]
+    },
+    {
+      "group": "Credentials",
+      "pages": [
+        "ronika/credentials/share-credentials",
+        "ronika/credentials/delete-credentials",
+        "ronika/credentials/retrieve-credentials",
+        "ronika/credentials/update-credentials",
+        "ronika/credentials/fetch-credentials"
+      ]
+    },
+    {
+      "group": "Tasks",
+      "pages": [
+        "ronika/tasks/create-a-task",
+        "ronika/tasks/fetch-tasks",
+        "ronika/tasks/retrieve-a-task"
       ]
     }
   ],
@@ -79,5 +105,6 @@
     "github": "https://github.com/inducedai",
     "linkedin": "https://www.linkedin.com/company/induced-ai",
     "discord": "https://indcd.co/discord"
-  }
+  },
+  "openapi": ["./browse.json", "./ronika.json"]
 }

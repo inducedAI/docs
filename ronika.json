@@ -1,0 +1,867 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Ronika API",
+    "version": "0.0.1",
+    "description": "API for managing files and tasks for Ronika platform users."
+  },
+  "servers": [
+    {
+      "url": "https://ronika-api.induced.ai/v1"
+    }
+  ],
+  "paths": {
+    "/files": {
+      "get": {
+        "summary": "Fetch Files",
+        "description": "Retrieve a comprehensive list of all files that you have uploaded either via the dashboard or through the API. This includes any files to which you have provided direct download links at the time of task creation.",
+        "operationId": "getFiles",
+        "tags": ["Files"],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of files",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "files": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/File"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Upload Files",
+        "description": "Upload one or more files to your account. A maximum of 5 files can be uploaded at a time. The total size of your request should not exceed 50MB. If you have a larger file, please contact us at team@induced.ai.",
+        "operationId": "uploadFile",
+        "tags": ["Files"],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "The files to upload.",
+                    "minItems": 1,
+                    "maxItems": 5
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upload success response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ids": {
+                      "type": "array",
+                      "description": "The unique identifiers of the uploaded files. You can use these IDs to associate files with tasks.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/files/{id}": {
+      "get": {
+        "summary": "Retrieve File",
+        "description": "Get a single file's metadata.",
+        "operationId": "getFile",
+        "tags": ["Files"],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "required": true,
+            "$ref": "#/components/parameters/FileId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A single file's metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/File"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Rename File",
+        "description": "Rename a specific file to a new name. The new name should be unique within your account. If the new name is not unique, we will append a number to the end of the name to make it unique.",
+        "operationId": "renameFile",
+        "tags": ["Files"],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "required": true,
+            "$ref": "#/components/parameters/FileId"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The new name for the file."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rename success response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete File",
+        "description": "This operation permanently removes a specific file from your account. If the file is linked to any tasks, a copy will be preserved in the task's history. However, the file will be removed from your account's file list, and it will no longer be accessible for new tasks or for download.",
+        "operationId": "deleteFile",
+        "tags": ["Files"],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "required": true,
+            "$ref": "#/components/parameters/FileId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete success response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/credentials": {
+      "get": {
+        "summary": "Fetch Credentials",
+        "description": "Retrieve a comprehensive list of all credentials that you have shared with Ronika for your tasks. This includes any credentials that are currently in use or have been shared in the past.",
+        "operationId": "getCredentials",
+        "tags": ["Credentials"],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "credentials": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Account"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Share Credentials",
+        "description": "Share your credentials with Ronika for a specific task. This will allow Ronika to access the tool or service associated with the credentials to complete the task.",
+        "operationId": "shareCredentials",
+        "tags": ["Credentials"],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Account"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "password": {
+                        "type": "string",
+                        "description": "The password associated with the account."
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Share credentials success response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/credentials/{id}": {
+      "get": {
+        "summary": "Retrieve Credentials",
+        "description": "Get a single credential's details.",
+        "operationId": "getCredentialsById",
+        "tags": ["Credentials"],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The unique identifier of the credential."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A single credential's details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Account"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update Credentials",
+        "description": "Update the details of a specific credential. You can update the name, URL, icon, username, and additional information associated with the credential.",
+        "operationId": "updateCredentials",
+        "tags": ["Credentials"],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+
+            "description": "The unique identifier of the credential."
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "username": {
+                        "type": "string",
+                        "description": "The username associated with the account."
+                      },
+                      "password": {
+                        "type": "string",
+                        "description": "The password associated with the account."
+                      },
+                      "additionalInfo": {
+                        "type": "string",
+                        "description": "Any additional information you would like to share about the account."
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update credentials success response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Credentials",
+        "description": "This operation permanently removes a specific credential from your account. The credential will no longer be accessible for new tasks.",
+        "operationId": "deleteCredentials",
+        "tags": ["Credentials"],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+
+            "description": "The unique identifier of the credential."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete credentials success response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks": {
+      "get": {
+        "summary": "Fetch Tasks",
+        "description": "Retrieve a comprehensive list of all tasks that you have created either via the dashboard or through the API. This includes any tasks that are currently in progress or have been completed. The list is sorted by the most recent task first.",
+        "operationId": "getTasks",
+        "tags": ["Tasks"],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of tasks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tasks": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Task"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a task",
+        "description": "Create a new task with optional file uploads for the authenticated user.",
+        "operationId": "createTask",
+        "tags": ["Tasks"],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "intent": {
+                    "type": "string",
+                    "description": "Your prompt for the task."
+                  },
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "Files to be associated with the task. Can be IDs of the files you have uploaded before or direct links to files. Invalid IDs and files are currently silently ignored."
+                  },
+                  "accounts": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Account IDs to be associated with the task to share credentials for the particular task."
+                  },
+                  "details": {
+                    "$ref": "#/components/schemas/Form"
+                  },
+                  "expectedOutput": {
+                    "$ref": "#/components/schemas/OutputRequest"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task creation success response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks/{id}": {
+      "get": {
+        "summary": "Retrieve a task",
+        "description": "Get a single task's details.",
+        "operationId": "getTask",
+        "tags": ["Tasks"],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "required": true,
+            "$ref": "#/components/parameters/TaskId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A single task's details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      }
+    },
+    "parameters": {
+      "FileId": {
+        "required": true,
+        "name": "id",
+        "in": "path",
+        "schema": {
+          "type": "string"
+        },
+        "description": "The unique identifier of the file."
+      },
+      "TaskId": {
+        "required": true,
+
+        "name": "id",
+        "in": "path",
+        "schema": {
+          "type": "string"
+        },
+        "description": "The unique identifier of the task."
+      }
+    },
+    "schemas": {
+      "File": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "size": {
+            "type": "integer"
+          },
+          "mimeType": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "previewUrl": {
+            "type": "string",
+            "description": "The URL to preview the file."
+          }
+        }
+      },
+      "Task": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the task."
+          },
+          "status": {
+            "type": "string",
+            "description": "The status of the task (e.g., IN_PROGRESS, COMPLETED)."
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The time the task was started."
+          },
+          "completedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The time the task was completed. Will be null if the task is still in progress."
+          },
+          "intent": {
+            "type": "string",
+            "description": "Your prompt for the task."
+          },
+          "title": {
+            "type": "string",
+            "description": "The title of the task. Automatically generated based on the intent when the task is created."
+          },
+          "summary": {
+            "type": "string",
+            "description": "A summary of the milestones to be completed in the task."
+          }
+        }
+      },
+      "TaskDetail": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Task"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "form": {
+                "$ref": "#/components/schemas/Form"
+              },
+              "milestones": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Milestone"
+                }
+              },
+              "outputs": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Output"
+                }
+              },
+              "chats": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Chat"
+                }
+              },
+              "files": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/File"
+                }
+              },
+              "accounts": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Account"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "OutputRequest": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "The type of output expected. Available options are TEXT, TABLE, and DOCUMENT."
+          },
+          "columns": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The columns expected in the output, applicable if type is TABLE."
+          },
+          "prompt": {
+            "type": "string",
+            "description": "Description on how you want the document or text to be. This is applicable if the type is DOCUMENT or TEXT."
+          }
+        }
+      },
+      "MilestoneRequest": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "The title of the milestone."
+            },
+            "description": {
+              "type": "string",
+              "description": "The description of the milestone."
+            }
+          }
+        }
+      },
+      "Milestone": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "The title of the milestone."
+          },
+          "description": {
+            "type": "string",
+            "description": "The description of the milestone."
+          },
+          "completed": {
+            "type": "boolean",
+            "description": "Indicates whether the milestone has been completed."
+          }
+        }
+      },
+      "Output": {
+        "allOf": [
+          {
+            "properties": {
+              "id": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "$ref": "#/components/schemas/OutputRequest"
+          },
+          {
+            "properties": {
+              "summary": {
+                "type": "string",
+                "description": "A summary of how the output was obtained."
+              },
+              "document": {
+                "type": "string",
+                "description": "Markdown content of the document."
+              },
+              "shareUrls": {
+                "type": "object",
+                "description": "The URLs to share the document or table output(s)."
+              },
+              "downloadUrls": {
+                "type": "string",
+                "description": "The URL to download the document or table output(s) in different formats."
+              }
+            }
+          }
+        ]
+      },
+      "Chat": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "description": "The role of the message sender. Can only be USER or AGENT."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Account": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the tool or service the account is associated with."
+          },
+          "url": {
+            "type": "string",
+            "description": "The URL of the tool or service."
+          },
+          "icon": {
+            "type": "string",
+            "description": "The icon URL of the tool or service."
+          },
+          "username": {
+            "type": "string",
+            "description": "The username associated with the account."
+          },
+          "additionalInfo": {
+            "type": "string",
+            "description": "Any additional information you would like to share about the account."
+          }
+        }
+      },
+      "Form": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "The type of the form field. Available options are text, textarea, dropdown, multi_select and location."
+            },
+            "key": {
+              "type": "string",
+              "description": "The label for the form field."
+            },
+            "value": {
+              "type": "string",
+              "description": "The value for the form field. Can be a single string or an array of strings depending on the type of the field (applicable only if the type is dropdown or multi_select)."
+            },
+            "options": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "The options for the dropdown or multi_select field. Applicable only if the type is dropdown or multi_select."
+            }
+          }
+        }
+      }
+    }
+  }
+}
